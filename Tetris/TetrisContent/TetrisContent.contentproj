@@ -42,28 +42,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SquareBlue.png">
-      <Name>SquareBlue</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="SquareCyan.png">
-      <Name>SquareCyan</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="SquarePink.png">
-      <Name>SquarePink</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="SquareRed.png">
-      <Name>SquareRed</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="SquareYellow.png">
-      <Name>SquareYellow</Name>
+    <Compile Include="SquareGray.png">
+      <Name>SquareGray</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

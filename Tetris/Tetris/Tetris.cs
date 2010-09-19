@@ -18,10 +18,13 @@ namespace Tetris
 	{
 		Random Random { get; set; }
 
+		KeyboardState OldKeyboardState { get; set; }
+		KeyboardState CurrentKeyboardState { get; set; }
+
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
 
-		Texture2D SquareBlue { get; set; }
+		Texture2D Square { get; set; }
 
 		Piece CurrentPiece { get; set; }
 		Point CurrentPosition { get; set; }
@@ -53,13 +56,13 @@ namespace Tetris
 			Random = new Random(DateTime.Now.Millisecond);
 			Pieces = new List<Piece>
 			{
-				new Piece_O(),
-				new Piece_I(),
-				new Piece_S(),
-				new Piece_Z(),
-				new Piece_L(),
-				new Piece_J(),
-				new Piece_T(),
+				new Piece_O(Color.Yellow),
+				new Piece_I(Color.Cyan),
+				new Piece_S(Color.Green),
+				new Piece_Z(Color.Pink),
+				new Piece_L(Color.Blue),
+				new Piece_J(Color.Orange),
+				new Piece_T(Color.Pink),
 			};
 
 			TimeTick = TimeSpan.FromMilliseconds(500);
@@ -79,7 +82,7 @@ namespace Tetris
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
-			SquareBlue = Content.Load<Texture2D>("SquareBlue");
+			Square = Content.Load<Texture2D>("SquareGray");
 		}
 
 		/// <summary>
@@ -98,16 +101,29 @@ namespace Tetris
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
+			CurrentKeyboardState = Keyboard.GetState();
+
 			// Allows the game to exit
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+			if (Press(Keys.Escape))
 				this.Exit();
 
-			var keyboard = Keyboard.GetState();
+			if (CurrentPiece != null)
+			{
+				if (Press(Keys.Left))
+					CurrentPosition = new Point(CurrentPosition.X - 1, CurrentPosition.Y);
+				else if (Press(Keys.Right))
+					CurrentPosition = new Point(CurrentPosition.X + 1, CurrentPosition.Y);
 
-			if(keyboard.IsKeyDown(Keys.Left) && CurrentPosition.X > 0)
-				CurrentPosition = new Point(CurrentPosition.X - 1, CurrentPosition.Y);
-			else if (keyboard.IsKeyDown(Keys.Right) && CurrentPosition.X < GridPosition.Width - 1)
-				CurrentPosition = new Point(CurrentPosition.X + 1, CurrentPosition.Y);
+				if (Press(Keys.Z))
+					CurrentPiece.RotateCounterClockWise();
+				else if (Press(Keys.X))
+					CurrentPiece.RotateClockWise();
+
+				if (CurrentPosition.X - CurrentPiece.LeftWidth < 0)
+					CurrentPosition = new Point(CurrentPiece.LeftWidth, CurrentPosition.Y);
+				else if (CurrentPosition.X + CurrentPiece.RightWidth >= GridPosition.Width)
+					CurrentPosition = new Point(GridPosition.Width - CurrentPiece.RightWidth - 1, CurrentPosition.Y);
+			}
 
 			if (DateTime.Now.Subtract(LastTick) > TimeTick)
 			{
@@ -118,8 +134,13 @@ namespace Tetris
 					CurrentPiece = Pieces[Random.Next(Pieces.Count)];
 					CurrentPosition = new Point(GridPosition.Width / 2, 0);
 				}
-				else CurrentPosition = new Point(CurrentPosition.X, CurrentPosition.Y + 1);
+				else
+				{
+					CurrentPosition = new Point(CurrentPosition.X, CurrentPosition.Y + 1);
+				}
 			}
+
+			OldKeyboardState = CurrentKeyboardState;
 
 			base.Update(gameTime);
 		}
@@ -140,17 +161,22 @@ namespace Tetris
 					for (int c = 0; c < 4; c++)
 					{
 						if (CurrentPiece.Shape[l, c])
-							spriteBatch.Draw(SquareBlue,
+							spriteBatch.Draw(Square,
 								new Vector2(
-									GridPosition.Left + (CurrentPosition.X + c - 2) * SquareBlue.Width,
-									GridPosition.Top + (CurrentPosition.Y + l - 1) * SquareBlue.Height
-								), Color.White);
+									GridPosition.Left + (CurrentPosition.X + c - 2) * Square.Width,
+									GridPosition.Top + (CurrentPosition.Y + l - 1) * Square.Height
+								), CurrentPiece.Color);
 					}
 				}
 			}
 			spriteBatch.End();
 
 			base.Draw(gameTime);
+		}
+
+		bool Press(Keys key)
+		{
+			return CurrentKeyboardState.IsKeyDown(key) && (OldKeyboardState == null || OldKeyboardState.IsKeyUp(key));
 		}
 	}
 }

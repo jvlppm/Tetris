@@ -6,19 +6,75 @@ namespace Tetris
 {
 	public class Piece
 	{
-		int CurrentPosition;
-		List<bool[,]> Positions { get; set; }
-
-		public bool[,] Shape { get { return Positions[CurrentPosition]; } }
-
-		public Piece()
+		class PieceShape
 		{
-			Positions = new List<bool[,]>();
+			public PieceShape(bool[,] shape)
+			{
+				Shape = shape;
+				Width = 4;
+				LeftWidth = 2;
+				RightWidth = 1;
+
+				for (int i = 0; i < 2; i++)
+				{
+					bool emptyCol = true;
+					for (int j = 0; j < 4; j++)
+					{
+						if (shape[j, i])
+						{
+							emptyCol = false;
+							break;
+						}
+					}
+
+					if (emptyCol)
+					{
+						Width--;
+						LeftWidth--;
+					}
+				}
+
+				for (int i = 3; i > 2; i--)
+				{
+					bool emptyCol = true;
+					for (int j = 0; j < 4; j++)
+					{
+						if (shape[j, i])
+						{
+							emptyCol = false;
+							break;
+						}
+					}
+
+					if (emptyCol)
+					{
+						Width--;
+						RightWidth--;
+					}
+				}
+			}
+
+			public bool[,] Shape { get; private set; }
+			public int LeftWidth { get; private set; }
+			public int RightWidth { get; private set; }
+			public int Width { get; private set; }
+		}
+
+		int CurrentPosition;
+		List<PieceShape> Positions { get; set; }
+
+		public bool[,] Shape { get { return Positions[CurrentPosition].Shape; } }
+		public Color Color { get; private set; }
+
+		public Piece(Color color)
+		{
+			Color = color;
+			Positions = new List<PieceShape>();
 		}
 
 		protected void AddPosition(bool[,] shape)
 		{
-			Positions.Add(shape);
+			Positions.Add(new PieceShape(shape));
 		}
 
 		public void RotateClockWise()
@@ -34,5 +90,11 @@ namespace Tetris
 			if (CurrentPosition < 0)
 				CurrentPosition = Positions.Count - 1;
 		}
+
+		public int LeftWidth { get { return Positions[CurrentPosition].LeftWidth; } }
+
+		public int RightWidth { get { return Positions[CurrentPosition].RightWidth; } }
+
+		public int Width { get { return Positions[CurrentPosition].Width; } }
 	}
 }

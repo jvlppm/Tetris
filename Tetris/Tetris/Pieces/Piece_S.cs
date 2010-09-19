@@ -1,8 +1,10 @@
-﻿namespace Tetris
+﻿using Microsoft.Xna.Framework;
+
+namespace Tetris
 {
 	public class Piece_S: Piece
 	{
-		public Piece_S()
+		public Piece_S(Color color) : base(color)
 		{
 			AddPosition(new bool[4, 4]
 			{
