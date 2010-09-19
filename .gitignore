@@ -1,0 +1,12 @@
+bin
+obj
+*.ncb
+*.cd
+*.user
+*.suo
+Thumbs.db
+_ReSharper
+Debug
+Release
+*~
+
