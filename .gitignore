@@ -9,4 +9,5 @@ _ReSharper
 Debug
 Release
 *~
+*.cachefile
 

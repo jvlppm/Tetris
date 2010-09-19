@@ -14,15 +14,32 @@ namespace Tetris
 	/// <summary>
 	/// This is the main type for your game
 	/// </summary>
-	public class Game1 : Microsoft.Xna.Framework.Game
+	public class Tetris : Microsoft.Xna.Framework.Game
 	{
+		Random Random { get; set; }
+
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
 
-		public Game1()
+		Texture2D SquareBlue { get; set; }
+
+		Piece CurrentPiece { get; set; }
+		Point CurrentPosition { get; set; }
+		List<Piece> Pieces { get; set; }
+
+		Rectangle GridPosition { get; set; }
+
+		TimeSpan TimeTick { get; set; }
+		DateTime LastTick { get; set; }
+
+
+		public Tetris()
 		{
 			graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
+
+			graphics.PreferredBackBufferWidth = 12 * 10;
+			graphics.PreferredBackBufferHeight = 12 * 20;
 		}
 
 		/// <summary>
@@ -33,7 +50,22 @@ namespace Tetris
 		/// </summary>
 		protected override void Initialize()
 		{
-			// TODO: Add your initialization logic here
+			Random = new Random(DateTime.Now.Millisecond);
+			Pieces = new List<Piece>
+			{
+				new Piece_O(),
+				new Piece_I(),
+				new Piece_S(),
+				new Piece_Z(),
+				new Piece_L(),
+				new Piece_J(),
+				new Piece_T(),
+			};
+
+			TimeTick = TimeSpan.FromMilliseconds(500);
+			LastTick = DateTime.Now;
+
+			GridPosition = new Rectangle(0, 0, 10, 20);
 
 			base.Initialize();
 		}
@@ -47,7 +79,7 @@ namespace Tetris
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
-			// TODO: use this.Content to load your game content here
+			SquareBlue = Content.Load<Texture2D>("SquareBlue");
 		}
 
 		/// <summary>
@@ -70,7 +102,24 @@ namespace Tetris
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
 				this.Exit();
 
-			// TODO: Add your update logic here
+			var keyboard = Keyboard.GetState();
+
+			if(keyboard.IsKeyDown(Keys.Left) && CurrentPosition.X > 0)
+				CurrentPosition = new Point(CurrentPosition.X - 1, CurrentPosition.Y);
+			else if (keyboard.IsKeyDown(Keys.Right) && CurrentPosition.X < GridPosition.Width - 1)
+				CurrentPosition = new Point(CurrentPosition.X + 1, CurrentPosition.Y);
+
+			if (DateTime.Now.Subtract(LastTick) > TimeTick)
+			{
+				LastTick = DateTime.Now;
+
+				if (CurrentPiece == null)
+				{
+					CurrentPiece = Pieces[Random.Next(Pieces.Count)];
+					CurrentPosition = new Point(GridPosition.Width / 2, 0);
+				}
+				else CurrentPosition = new Point(CurrentPosition.X, CurrentPosition.Y + 1);
+			}
 
 			base.Update(gameTime);
 		}
@@ -83,7 +132,23 @@ namespace Tetris
 		{
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
-			// TODO: Add your drawing code here
+			spriteBatch.Begin();
+			if (CurrentPiece != null)
+			{
+				for (int l = 0; l < 4; l++)
+				{
+					for (int c = 0; c < 4; c++)
+					{
+						if (CurrentPiece.Shape[l, c])
+							spriteBatch.Draw(SquareBlue,
+								new Vector2(
+									GridPosition.Left + (CurrentPosition.X + c - 2) * SquareBlue.Width,
+									GridPosition.Top + (CurrentPosition.Y + l - 1) * SquareBlue.Height
+								), Color.White);
+					}
+				}
+			}
+			spriteBatch.End();
 
 			base.Draw(gameTime);
 		}

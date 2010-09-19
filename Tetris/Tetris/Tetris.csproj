@@ -107,9 +107,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Pieces\Piece_T.cs" />
+    <Compile Include="Pieces\Piece_J.cs" />
+    <Compile Include="Pieces\Piece_L.cs" />
+    <Compile Include="Pieces\Piece_Z.cs" />
+    <Compile Include="Pieces\Piece_S.cs" />
+    <Compile Include="Pieces\Piece_I.cs" />
+    <Compile Include="Pieces\Piece_O.cs" />
+    <Compile Include="Pieces\Piece.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Game1.cs" />
+    <Compile Include="Tetris.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
