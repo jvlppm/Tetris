@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameGrid.cs" />
     <Compile Include="Pieces\Piece_T.cs" />
     <Compile Include="Pieces\Piece_J.cs" />
     <Compile Include="Pieces\Piece_L.cs" />

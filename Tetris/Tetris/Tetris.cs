@@ -30,7 +30,7 @@ namespace Tetris
 		Point CurrentPosition { get; set; }
 		List<Piece> Pieces { get; set; }
 
-		Rectangle GridPosition { get; set; }
+		GameGrid Grid { get; set; }
 
 		TimeSpan TimeTick { get; set; }
 		DateTime LastTick { get; set; }
@@ -68,7 +68,7 @@ namespace Tetris
 			TimeTick = TimeSpan.FromMilliseconds(500);
 			LastTick = DateTime.Now;
 
-			GridPosition = new Rectangle(0, 0, 10, 20);
+			Grid = new GameGrid(10, 20);
 
 			base.Initialize();
 		}
@@ -110,9 +110,17 @@ namespace Tetris
 			if (CurrentPiece != null)
 			{
 				if (Press(Keys.Left))
-					CurrentPosition = new Point(CurrentPosition.X - 1, CurrentPosition.Y);
+				{
+					var leftPoint = new Point(CurrentPosition.X - 1, CurrentPosition.Y);
+					if(ValidPosition(leftPoint))
+						CurrentPosition = leftPoint;
+				}
 				else if (Press(Keys.Right))
-					CurrentPosition = new Point(CurrentPosition.X + 1, CurrentPosition.Y);
+				{
+					var rightPoint = new Point(CurrentPosition.X + 1, CurrentPosition.Y);
+					if(ValidPosition(rightPoint))
+						CurrentPosition = rightPoint;
+				}
 
 				if (Press(Keys.Z))
 					CurrentPiece.RotateCounterClockWise();
@@ -121,8 +129,8 @@ namespace Tetris
 
 				if (CurrentPosition.X - CurrentPiece.LeftWidth < 0)
 					CurrentPosition = new Point(CurrentPiece.LeftWidth, CurrentPosition.Y);
-				else if (CurrentPosition.X + CurrentPiece.RightWidth >= GridPosition.Width)
-					CurrentPosition = new Point(GridPosition.Width - CurrentPiece.RightWidth - 1, CurrentPosition.Y);
+				else if (CurrentPosition.X + CurrentPiece.RightWidth >= Grid.Width)
+					CurrentPosition = new Point(Grid.Width - CurrentPiece.RightWidth - 1, CurrentPosition.Y);
 			}
 
 			if (DateTime.Now.Subtract(LastTick) > TimeTick)
@@ -132,17 +140,44 @@ namespace Tetris
 				if (CurrentPiece == null)
 				{
 					CurrentPiece = Pieces[Random.Next(Pieces.Count)];
-					CurrentPosition = new Point(GridPosition.Width / 2, 0);
+					CurrentPosition = new Point(Grid.Width / 2, 0);
 				}
 				else
 				{
-					CurrentPosition = new Point(CurrentPosition.X, CurrentPosition.Y + 1);
+					var nextPosition = new Point(CurrentPosition.X, CurrentPosition.Y + 1);
+					if(ValidPosition(nextPosition))
+						CurrentPosition = nextPosition;
+					else
+					{
+						for (int l = 0; l < 4; l++)
+							for (int c = 0; c < 4; c++)
+								if (CurrentPiece.Shape[l, c])
+									Grid[CurrentPosition.Y + l - 1, CurrentPosition.X + c - 2] = CurrentPiece.Color;
+						CurrentPiece = null;
+					}
 				}
 			}
 
 			OldKeyboardState = CurrentKeyboardState;
 
 			base.Update(gameTime);
+		}
+
+		private bool ValidPosition(Point nextPosition)
+		{
+			for (int l = 0; l < 4; l++)
+			{
+				int checkY = nextPosition.Y + l - 1;
+				if (checkY < 0) continue;
+				for (int c = 0; c < 4; c++)
+				{
+					int checkX = nextPosition.X + c - 2;
+					if (checkX < 0 || checkX >= Grid.Width) continue;
+					if (CurrentPiece.Shape[l, c] && (checkY >= Grid.Height || Grid[checkY, checkX] != Color.Transparent))
+						return false;
+				}
+			}
+			return true;
 		}
 
 		/// <summary>
@@ -163,9 +198,23 @@ namespace Tetris
 						if (CurrentPiece.Shape[l, c])
 							spriteBatch.Draw(Square,
 								new Vector2(
-									GridPosition.Left + (CurrentPosition.X + c - 2) * Square.Width,
-									GridPosition.Top + (CurrentPosition.Y + l - 1) * Square.Height
+									Grid.X + (CurrentPosition.X + c - 2) * Square.Width,
+									Grid.Y + (CurrentPosition.Y + l - 1) * Square.Height
 								), CurrentPiece.Color);
+					}
+				}
+			}
+			for (int l = 0; l < Grid.Height; l++)
+			{
+				for (int c = 0; c < Grid.Width; c++)
+				{
+					if (Grid[l, c] != Color.Transparent)
+					{
+						spriteBatch.Draw(Square,
+							new Vector2(
+									Grid.X + c * Square.Width,
+									Grid.Y + l * Square.Height
+								), Grid[l, c]);
 					}
 				}
 			}
