@@ -153,6 +153,29 @@ namespace Tetris
 							for (int c = 0; c < 4; c++)
 								if (CurrentPiece.Shape[l, c])
 									Grid[CurrentPosition.Y + l - 1, CurrentPosition.X + c - 2] = CurrentPiece.Color;
+
+						for (int l = Grid.Height - 1; l >= 0; l--)
+						{
+							bool removeLine = true;
+							for (int c = 0; c < Grid.Width; c++)
+							{
+								if (Grid[l, c] == Color.Transparent)
+								{
+									removeLine = false;
+									break;
+								}
+							}
+
+							if (removeLine)
+							{
+								for (int j = l - 1; j >= 0; j--)
+								{
+									for (int c = 0; c < Grid.Width; c++)
+										Grid[j + 1, c] = Grid[j, c];
+								}
+								l++;
+							}
+						}
 						CurrentPiece = null;
 					}
 				}
