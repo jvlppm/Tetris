@@ -81,9 +81,14 @@ namespace Tetris
 		private void SolidifyCurrentPiece()
 		{
 			for (int l = 0; l < 4; l++)
+			{
 				for (int c = 0; c < 4; c++)
-					if (CurrentPiece.Shape[l, c])
-						Grid[CurrentPosition.Y + l - 1, CurrentPosition.X + c - 2] = CurrentPiece.Color;
+				{
+					var gridLine = CurrentPosition.Y + l - 1;
+					if (gridLine >= 0 && CurrentPiece.Shape[l, c])
+						Grid[gridLine, CurrentPosition.X + c - 2] = CurrentPiece.Color;
+				}
+			}
 		}
 
 		// Remove linhas completas

@@ -53,9 +53,9 @@ namespace Tetris
 				new Piece_I(Color.Cyan),
 				new Piece_S(Color.Green),
 				new Piece_Z(Color.Pink),
-				new Piece_L(Color.Blue),
+				new Piece_L(Color.LightBlue),
 				new Piece_J(Color.Orange),
-				new Piece_T(Color.Pink),
+				new Piece_T(Color.DarkRed),
 			};
 
 			TimeTick = TimeSpan.FromMilliseconds(500);
