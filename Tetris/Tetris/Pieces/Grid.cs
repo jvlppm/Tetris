@@ -6,27 +6,27 @@ using Microsoft.Xna.Framework;
 
 namespace Tetris
 {
-	public class GameGrid
+	public class Grid
 	{
 		public int Width { get; private set; }
 		public int Height { get; private set; }
 		public int X { get; set; }
 		public int Y { get; set; }
 
-		Color[,] Grid { get; set; }
+		Color[,] _grid;
 
-		public GameGrid(int width, int height)
+		public Grid(int width, int height)
 		{
 			Width = width;
 			Height = height;
 
-			Grid = new Color[Height, Width];
+			_grid = new Color[Height, Width];
 		}
 
 		public Color this[int line, int col]
 		{
-			get { return Grid[line, col]; }
-			set { Grid[line, col] = value; }
+			get { return _grid[line, col]; }
+			set { _grid[line, col] = value; }
 		}
 	}
 }
