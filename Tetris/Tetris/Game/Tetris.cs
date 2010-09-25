@@ -17,6 +17,7 @@ namespace Tetris
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
 
+		Texture2D Background { get; set; }
 		Texture2D Square { get; set; }
 
 		Piece CurrentPiece { get; set; }
@@ -34,8 +35,8 @@ namespace Tetris
 			graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 
-			graphics.PreferredBackBufferWidth = 12 * 10;
-			graphics.PreferredBackBufferHeight = 12 * 20;
+			graphics.PreferredBackBufferWidth = 320;
+			graphics.PreferredBackBufferHeight = 240;
 		}
 
 		/// <summary>
@@ -75,6 +76,8 @@ namespace Tetris
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
+			Grid.X = 35;
+			Background = Content.Load<Texture2D>("Layout");
 			Square = Content.Load<Texture2D>("SquareGray");
 		}
 

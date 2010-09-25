@@ -18,6 +18,7 @@ namespace Tetris
 
 			spriteBatch.Begin();
 
+			spriteBatch.Draw(Background, Vector2.Zero, Color.White);
 			DrawCurrentPiece();
 			DrawGrid();
 
