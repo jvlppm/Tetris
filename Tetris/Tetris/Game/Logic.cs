@@ -39,9 +39,17 @@ namespace Tetris
 				}
 
 				if (Press(Keys.X))
+				{
 					CurrentPiece.RotateCounterClockWise();
+					if(!ValidPosition(CurrentPosition))
+						CurrentPiece.RotateClockWise();
+				}
 				else if (Press(Keys.Z))
+				{
 					CurrentPiece.RotateClockWise();
+					if (!ValidPosition(CurrentPosition))
+						CurrentPiece.RotateCounterClockWise();
+				}
 
 				if (CurrentPosition.X - CurrentPiece.LeftWidth < 0)
 					CurrentPosition = new Point(CurrentPiece.LeftWidth, CurrentPosition.Y);
