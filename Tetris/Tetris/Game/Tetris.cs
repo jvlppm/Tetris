@@ -21,8 +21,8 @@ namespace Tetris
 		Texture2D Square { get; set; }
 
 		Piece CurrentPiece { get; set; }
+		Piece NextPiece { get; set; }
 		Point CurrentPosition { get; set; }
-		List<Piece> Pieces { get; set; }
 
 		Grid Grid { get; set; }
 
@@ -48,21 +48,15 @@ namespace Tetris
 		protected override void Initialize()
 		{
 			Random = new Random(DateTime.Now.Millisecond);
-			Pieces = new List<Piece>
-			{
-				new Piece_O(Color.Yellow),
-				new Piece_I(Color.Cyan),
-				new Piece_S(Color.Green),
-				new Piece_Z(Color.Pink),
-				new Piece_L(Color.LightBlue),
-				new Piece_J(Color.Orange),
-				new Piece_T(Color.DarkRed),
-			};
+
+			NextPiece = CreatePiece();
+			CurrentPiece = CreatePiece();
 
 			TimeTick = TimeSpan.FromMilliseconds(500);
 			LastTick = DateTime.Now;
 
 			Grid = new Grid(10, 20);
+			CurrentPosition = new Point(Grid.Width / 2, 0);
 
 			base.Initialize();
 		}
@@ -88,6 +82,21 @@ namespace Tetris
 		protected override void UnloadContent()
 		{
 			// TODO: Unload any non ContentManager content here
+		}
+
+		Piece CreatePiece()
+		{
+			switch(Random.Next(7))
+			{
+				case 0: return new Piece_O(Color.Yellow);
+				case 1: return new Piece_I(Color.Cyan);
+				case 2: return new Piece_S(Color.Green);
+				case 3: return new Piece_Z(Color.Pink);
+				case 4: return new Piece_L(Color.LightBlue);
+				case 5: return new Piece_J(Color.Orange);
+				case 6: return new Piece_T(Color.DarkRed);
+			}
+			return null;
 		}
 	}
 }

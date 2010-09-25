@@ -56,7 +56,8 @@ namespace Tetris
 
 				if (CurrentPiece == null)
 				{
-					CurrentPiece = Pieces[Random.Next(Pieces.Count)];
+					CurrentPiece = NextPiece;
+					NextPiece = CreatePiece();
 					CurrentPosition = new Point(Grid.Width / 2, 0);
 				}
 				else

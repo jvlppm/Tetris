@@ -19,7 +19,9 @@ namespace Tetris
 			spriteBatch.Begin();
 
 			spriteBatch.Draw(Background, Vector2.Zero, Color.White);
+
 			DrawCurrentPiece();
+			DrawNextPiece();
 			DrawGrid();
 
 			spriteBatch.End();
@@ -43,6 +45,22 @@ namespace Tetris
 									Grid.Y + (CurrentPosition.Y + l - 1) * Square.Height
 								), CurrentPiece.Color);
 					}
+				}
+			}
+		}
+
+		void DrawNextPiece()
+		{
+			for (int l = 0; l < 4; l++)
+			{
+				for (int c = 0; c < 4; c++)
+				{
+					if (NextPiece.Shape[l, c])
+						spriteBatch.Draw(Square,
+							new Vector2(
+								190 + (5 + c - 2) * Square.Width,
+								150 + (2 + l - 1) * Square.Height
+							), NextPiece.Color);
 				}
 			}
 		}
