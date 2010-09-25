@@ -18,6 +18,12 @@ namespace Tetris
 		{
 			CurrentKeyboardState = Keyboard.GetState();
 
+			bool gravityTicking = DateTime.Now.Subtract(LastTick) > TimeTick;
+			bool subTicking = DateTime.Now.Subtract(LastSubTick) > TimeSpan.FromMilliseconds(50);
+
+			if (subTicking)
+				LastSubTick = DateTime.Now;
+
 			// Allows the game to exit
 			if (Press(Keys.Escape))
 				this.Exit();
@@ -25,23 +31,29 @@ namespace Tetris
 			// Movimentação da peça
 			if (CurrentPiece != null)
 			{
-				if (Press(Keys.Left))
+				if (Press(Keys.Left) || (subTicking && Pressing(Keys.Left) > 0.3))
 				{
 					var leftPoint = new Point(CurrentPosition.X - 1, CurrentPosition.Y);
 					if (ValidPosition(leftPoint))
 						CurrentPosition = leftPoint;
 				}
-				else if (Press(Keys.Right))
+				else if (Press(Keys.Right) || (subTicking && Pressing(Keys.Right) > 0.3))
 				{
 					var rightPoint = new Point(CurrentPosition.X + 1, CurrentPosition.Y);
 					if (ValidPosition(rightPoint))
 						CurrentPosition = rightPoint;
 				}
 
-				if (Press(Keys.X))
+				if (Press(Keys.Down) || (subTicking && Pressing(Keys.Down) > 0.3))
+				{
+					Score += 3;
+					gravityTicking = true;
+				}
+
+				if (Press(Keys.X) || Press(Keys.Up))
 				{
 					CurrentPiece.RotateCounterClockWise();
-					if(!ValidPosition(CurrentPosition))
+					if (!ValidPosition(CurrentPosition))
 						CurrentPiece.RotateClockWise();
 				}
 				else if (Press(Keys.Z))
@@ -58,30 +70,25 @@ namespace Tetris
 			}
 
 			// Descendo a peça atual
-			if (DateTime.Now.Subtract(LastTick) > TimeTick)
+			if (gravityTicking)
 			{
 				LastTick = DateTime.Now;
 
-				if (CurrentPiece == null)
+				var nextPosition = new Point(CurrentPosition.X, CurrentPosition.Y + 1);
+				if (ValidPosition(nextPosition))
+					CurrentPosition = nextPosition;
+				else
 				{
+					Score += 40;
+					SolidifyCurrentPiece();
+					ClearLines();
 					CurrentPiece = NextPiece;
 					NextPiece = CreatePiece();
 					CurrentPosition = new Point(Grid.Width / 2, 0);
 				}
-				else
-				{
-					var nextPosition = new Point(CurrentPosition.X, CurrentPosition.Y + 1);
-					if (ValidPosition(nextPosition))
-						CurrentPosition = nextPosition;
-					else
-					{
-						SolidifyCurrentPiece();
-						ClearLines();
-						CurrentPiece = null;
-					}
-				}
 			}
 
+			UpdateKeyboardTimes();
 			OldKeyboardState = CurrentKeyboardState;
 			base.Update(gameTime);
 		}
@@ -103,6 +110,7 @@ namespace Tetris
 		// Remove linhas completas
 		private void ClearLines()
 		{
+			int cleared = 0;
 			for (int l = Grid.Height - 1; l >= 0; l--)
 			{
 				bool removeLine = true;
@@ -117,7 +125,7 @@ namespace Tetris
 
 				if (removeLine)
 				{
-					Lines++;
+					cleared++;
 					for (int j = l - 1; j >= 0; j--)
 					{
 						for (int c = 0; c < Grid.Width; c++)
@@ -125,6 +133,17 @@ namespace Tetris
 					}
 					l++;
 				}
+			}
+
+			Lines += cleared;
+
+			switch(cleared)
+			{
+				case 1: Score += (int)Level * 40 + 40; break;
+				case 2: Score += (int)Level * 100 + 100; break;
+				case 3: Score += (int)Level * 300 + 300; break;
+				case 4: Score += (int)Level * 1200 + 1200; break;
+				default: break;
 			}
 		}
 
@@ -146,10 +165,38 @@ namespace Tetris
 			return true;
 		}
 
+		#region Keyboard
+
+		void UpdateKeyboardTimes()
+		{
+			foreach (Keys key in Enum.GetValues(typeof(Keys)))
+			{
+				if (Press(key))
+					StartPressing.Add(key, DateTime.Now);
+				else if (Release(key))
+					StartPressing.Remove(key);
+			}
+		}
+
+		double Pressing(Keys key)
+		{
+			if (StartPressing.ContainsKey(key))
+				return DateTime.Now.Subtract(StartPressing[key]).TotalSeconds;
+
+			return 0;
+		}
+
 		// Detecta se a tecla foi pressionada
 		bool Press(Keys key)
 		{
 			return CurrentKeyboardState.IsKeyDown(key) && (OldKeyboardState == null || OldKeyboardState.IsKeyUp(key));
 		}
+
+		bool Release(Keys key)
+		{
+			return CurrentKeyboardState.IsKeyUp(key) && (OldKeyboardState != null && OldKeyboardState.IsKeyDown(key));
+		}
+
+		#endregion
 	}
 }

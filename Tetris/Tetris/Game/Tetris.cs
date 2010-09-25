@@ -26,8 +26,10 @@ namespace Tetris
 
 		Grid Grid { get; set; }
 
+		Dictionary<Keys, DateTime> StartPressing { get; set; }
 		TimeSpan TimeTick { get; set; }
 		DateTime LastTick { get; set; }
+		DateTime LastSubTick { get; set; }
 
 		SpriteFont DefaultFont { get; set; }
 
@@ -53,6 +55,8 @@ namespace Tetris
 					Level = Lines / 10;
 			}
 		}
+
+		int Score { get; set; }
 		#endregion
 
 		public Tetris()
@@ -82,6 +86,8 @@ namespace Tetris
 
 			Grid = new Grid(10, 20);
 			CurrentPosition = new Point(Grid.Width / 2, 0);
+
+			StartPressing = new Dictionary<Keys, DateTime>();
 
 			base.Initialize();
 		}

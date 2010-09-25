@@ -53,6 +53,7 @@ namespace Tetris
 		void DrawInfo()
 		{
 			spriteBatch.DrawString(DefaultFont, "Pontos:", new Vector2(200, 15), Color.Black);
+			spriteBatch.DrawString(DefaultFont, Score.ToString("#,##0"), new Vector2(200, 30), Color.Black);
 
 			spriteBatch.DrawString(DefaultFont, "Linhas:", new Vector2(200, 90), Color.Black);
 			spriteBatch.DrawString(DefaultFont, Lines.ToString(), new Vector2(280, 90), Color.Black);
