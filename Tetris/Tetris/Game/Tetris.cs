@@ -28,6 +28,31 @@ namespace Tetris
 
 		TimeSpan TimeTick { get; set; }
 		DateTime LastTick { get; set; }
+
+		SpriteFont DefaultFont { get; set; }
+
+		double _level;
+		double Level
+		{
+			get { return _level; }
+			set
+			{
+				_level = value;
+				TimeTick = TimeSpan.FromSeconds(Math.Pow((0.8 - ((_level - 1) * 0.007)), (_level - 1)));
+			}
+		}
+
+		int _lines;
+		int Lines
+		{
+			get { return _lines; }
+			set
+			{
+				_lines = value;
+				if (Lines / 10 > Level)
+					Level = Lines / 10;
+			}
+		}
 		#endregion
 
 		public Tetris()
@@ -52,7 +77,7 @@ namespace Tetris
 			NextPiece = CreatePiece();
 			CurrentPiece = CreatePiece();
 
-			TimeTick = TimeSpan.FromMilliseconds(500);
+			Level = 0;
 			LastTick = DateTime.Now;
 
 			Grid = new Grid(10, 20);
@@ -69,6 +94,8 @@ namespace Tetris
 		{
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
+
+			DefaultFont = Content.Load<SpriteFont>("DefaultFont");
 
 			Grid.X = 35;
 			Background = Content.Load<Texture2D>("Layout");

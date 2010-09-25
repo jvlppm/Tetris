@@ -23,6 +23,7 @@ namespace Tetris
 			DrawCurrentPiece();
 			DrawNextPiece();
 			DrawGrid();
+			DrawInfo();
 
 			spriteBatch.End();
 
@@ -49,8 +50,21 @@ namespace Tetris
 			}
 		}
 
+		void DrawInfo()
+		{
+			spriteBatch.DrawString(DefaultFont, "Pontos:", new Vector2(200, 15), Color.Black);
+
+			spriteBatch.DrawString(DefaultFont, "Linhas:", new Vector2(200, 90), Color.Black);
+			spriteBatch.DrawString(DefaultFont, Lines.ToString(), new Vector2(280, 90), Color.Black);
+
+			spriteBatch.DrawString(DefaultFont, "Level:", new Vector2(200, 110), Color.Black);
+			spriteBatch.DrawString(DefaultFont, Level.ToString(), new Vector2(280, 110), Color.Black);
+		}
+
 		void DrawNextPiece()
 		{
+			spriteBatch.DrawString(DefaultFont, "Próxima:", new Vector2(200, 155), Color.Black);
+
 			for (int l = 0; l < 4; l++)
 			{
 				for (int c = 0; c < 4; c++)
@@ -59,7 +73,7 @@ namespace Tetris
 						spriteBatch.Draw(Square,
 							new Vector2(
 								190 + (5 + c - 2) * Square.Width,
-								150 + (2 + l - 1) * Square.Height
+								150 + (3 + l - 1) * Square.Height
 							), NextPiece.Color);
 				}
 			}

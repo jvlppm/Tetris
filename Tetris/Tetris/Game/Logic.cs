@@ -109,6 +109,7 @@ namespace Tetris
 
 				if (removeLine)
 				{
+					Lines++;
 					for (int j = l - 1; j >= 0; j--)
 					{
 						for (int c = 0; c < Grid.Width; c++)
